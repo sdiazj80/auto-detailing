@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #070809;
+  --bg-rise: #0B0D12;
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-strong: rgba(255, 255, 255, 0.14);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: #ECEEF3;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(90, 230, 255, 0.25);
+  color: #fff;
+}
+
+/* Thin custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #07080B; }
+::-webkit-scrollbar-thumb { background: #1F242E; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #2A303C; }
+
+/* ---------- Reusable primitives ---------- */
+
+@layer components {
+  .container-xl {
+    @apply mx-auto w-full max-w-[1400px] px-5 sm:px-8 lg:px-12;
+  }
+
+  .hairline {
+    @apply border border-white/[0.08];
+  }
+
+  .eyebrow {
+    @apply font-mono text-[10px] sm:text-[11px] uppercase tracking-ultra-wide text-bone-muted;
+  }
+
+  .display-xl {
+    @apply font-display font-semibold leading-[0.92] tracking-tightest;
+    font-size: clamp(2.75rem, 8vw, 7.5rem);
+  }
+
+  .display-lg {
+    @apply font-display font-semibold leading-[0.95] tracking-tightest;
+    font-size: clamp(2.25rem, 5.5vw, 4.75rem);
+  }
+
+  .display-md {
+    @apply font-display font-semibold leading-[1] tracking-tight;
+    font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+  }
+
+  .chrome-text {
+    background: linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #d7dce4 40%,
+      #8a919e 65%,
+      #ECEEF3 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .ice-text {
+    background: linear-gradient(135deg, #7FF0FF 0%, #5AE6FF 40%, #1FB6D9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 font-mono text-[12px] uppercase tracking-[0.18em] transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-ice text-ink-0 shadow-glow-sm hover:bg-ice-bright hover:shadow-glow;
+  }
+
+  .btn-ghost {
+    @apply border border-white/15 bg-white/[0.02] text-bone backdrop-blur-md hover:border-ice/50 hover:bg-white/[0.06] hover:text-ice;
+  }
+
+  .card-glass {
+    @apply relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl;
+  }
+
+  .section-label {
+    @apply flex items-center gap-3 font-mono text-[11px] uppercase tracking-ultra-wide text-bone-muted;
+  }
+
+  .section-label::before {
+    content: "";
+    @apply block h-px w-10 bg-ice/60;
+  }
+
+  .hover-raise {
+    @apply transition-all duration-500 will-change-transform hover:-translate-y-0.5;
+  }
+
+  .noise-overlay {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-size: 160px 160px;
+  }
+}
+
+/* Hero base placeholder gradient (shows if /public/media/hero/*.mp4 missing) */
+.hero-fallback {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(90,230,255,0.22), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(90,230,255,0.1), transparent 60%),
+    linear-gradient(180deg, #0b0d12 0%, #050608 55%, #0b0d12 100%);
+}
+
+/* Subtle grid background for empty-asset sections */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Placeholder imagery — if no file exists, components use this class */
+.placeholder-gloss {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(90,230,255,0.25), transparent 50%),
+    linear-gradient(135deg, #11141a 0%, #1F242E 40%, #0B0D12 100%);
+  background-size: cover;
+  background-position: center;
+}
+
+.placeholder-gloss-dark {
+  background:
+    radial-gradient(ellipse at 70% 80%, rgba(90,230,255,0.12), transparent 60%),
+    linear-gradient(220deg, #0B0D12 0%, #171B23 50%, #050507 100%);
+}
