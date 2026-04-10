@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { site } from "@/config/site";
 
 /**
@@ -29,12 +29,39 @@ function Slider({
 }) {
   const [pos, setPos] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
 
-  const handlePointer = (clientX: number) => {
+  const updateFromClientX = useCallback((clientX: number) => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = ((clientX - rect.left) / rect.width) * 100;
     setPos(Math.max(4, Math.min(96, x)));
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    draggingRef.current = true;
+    // Capture the pointer so move/up events still reach us even if the
+    // finger leaves the element's box or passes over a child layer.
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // setPointerCapture can throw on some edge cases; safe to ignore.
+    }
+    updateFromClientX(e.clientX);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    updateFromClientX(e.clientX);
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    draggingRef.current = false;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
   };
 
   return (
@@ -45,18 +72,28 @@ function Slider({
     >
       <div
         ref={containerRef}
-        className="relative aspect-[4/3] w-full select-none overflow-hidden rounded-2xl border border-white/[0.08] bg-ink-200"
-        onMouseMove={(e) => e.buttons === 1 && handlePointer(e.clientX)}
-        onMouseDown={(e) => handlePointer(e.clientX)}
-        onTouchMove={(e) => handlePointer(e.touches[0].clientX)}
-        onTouchStart={(e) => handlePointer(e.touches[0].clientX)}
+        // touch-none (touch-action: none) is the critical mobile fix:
+        // it tells the browser not to interpret touch gestures on this
+        // element as scrolling/pinch, so horizontal drag isn't hijacked.
+        className="relative aspect-[4/3] w-full touch-none select-none overflow-hidden rounded-2xl border border-white/[0.08] bg-ink-200"
+        style={{ touchAction: "none" }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onPointerLeave={(e) => {
+          // If the pointer leaves without having captured (e.g. desktop
+          // mouse exiting while not pressed), just clear the flag.
+          if (e.buttons === 0) draggingRef.current = false;
+        }}
       >
         {/* After (full bg) */}
-        <div className="absolute inset-0">
+        <div className="pointer-events-none absolute inset-0">
           <img
             src={after}
             alt={`${label} — after`}
-            className="h-full w-full object-cover"
+            draggable={false}
+            className="h-full w-full select-none object-cover"
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
           <div className="placeholder-gloss absolute inset-0 -z-10" />
@@ -67,13 +104,14 @@ function Slider({
 
         {/* Before (clipped) */}
         <div
-          className="absolute inset-0 overflow-hidden"
+          className="pointer-events-none absolute inset-0 overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
         >
           <img
             src={before}
             alt={`${label} — before`}
-            className="h-full w-full object-cover"
+            draggable={false}
+            className="h-full w-full select-none object-cover"
             style={
               simulateBefore
                 ? {
