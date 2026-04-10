@@ -55,10 +55,24 @@ export const site = {
     sub: "Fully mobile, fully insured. We bring a pro-grade detail studio to your driveway — so your car looks better than the day you drove it home.",
     primaryCta: { label: "Book a Detail", href: "#book" },
     secondaryCta: { label: "See the Results", href: "#results" },
-    // Drop hero media at the paths below. The site auto-falls-back
-    // to a cinematic CSS gradient if the files don't exist.
-    videoSrc: "/media/hero/hero.mp4",
-    videoPoster: "/media/hero/hero-poster.jpg",
+    // Hero media. Multiple video sources are tried in order — the
+    // browser falls through to the next if the first fails. The
+    // cinematic CSS gradient in Hero.tsx is the final fallback if
+    // all videos fail to load.
+    //
+    // To use your own hero video, either:
+    //   (a) drop an mp4 at /public/media/hero/hero.mp4 and put
+    //       "/media/hero/hero.mp4" as the first entry below, or
+    //   (b) replace the URLs with your own remote sources.
+    videoSources: [
+      // Primary: closeup of a detailer polishing a black car (Mixkit, free license)
+      "https://assets.mixkit.co/videos/47833/47833-720.mp4",
+      // Fallback: foam wash (Mixkit, free license)
+      "https://assets.mixkit.co/videos/47586/47586-720.mp4",
+    ],
+    // Poster shown while video loads / if autoplay is blocked
+    videoPoster:
+      "https://images.pexels.com/photos/20042055/pexels-photo-20042055.jpeg?auto=compress&cs=tinysrgb&w=1920",
     metrics: [
       { value: "600+", label: "Vehicles detailed" },
       { value: "4.9★", label: "Across 180+ reviews" },
@@ -190,33 +204,94 @@ export const site = {
     },
   ],
 
+  // Before / After pairs.
+  //
+  // ⚠ TEMPORARY PLACEHOLDER APPROACH:
+  // Until the client provides real dirty→clean pairs, we use a single
+  // "after" image for each case and the BeforeAfter component applies
+  // a CSS filter (darken + desaturate + soft blur) to simulate the
+  // "before" state on the left side of the slider. The slider still
+  // works perfectly — dragging reveals the "corrected" layer.
+  //
+  // To use REAL before/after pairs:
+  //   1. Drop paired images at /public/media/before-after/01-before.jpg
+  //      and /public/media/before-after/01-after.jpg
+  //   2. Replace both URLs below with the local paths
+  //   3. In components/BeforeAfter.tsx, set `simulateBefore={false}`
+  //      on the <Slider> call (or remove the prop entirely)
   beforeAfter: [
     {
-      label: "2018 Range Rover — Interior Revival",
-      before: "/media/before-after/01-before.jpg",
-      after: "/media/before-after/01-after.jpg",
+      label: "911 Carrera — Single-Stage Correction",
+      before: "https://images.pexels.com/photos/20042055/pexels-photo-20042055.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      after: "https://images.pexels.com/photos/20042055/pexels-photo-20042055.jpeg?auto=compress&cs=tinysrgb&w=1600",
     },
     {
-      label: "2021 M4 — Single-Stage Correction",
-      before: "/media/before-after/02-before.jpg",
-      after: "/media/before-after/02-after.jpg",
+      label: "Bentley Continental — Full Exterior Decon",
+      before: "https://images.pexels.com/photos/6873174/pexels-photo-6873174.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      after: "https://images.pexels.com/photos/6873174/pexels-photo-6873174.jpeg?auto=compress&cs=tinysrgb&w=1600",
     },
     {
-      label: "2015 F-150 — Full Exterior Decon",
-      before: "/media/before-after/03-before.jpg",
-      after: "/media/before-after/03-after.jpg",
+      label: "BMW M4 — Gloss & Ceramic Prep",
+      before: "https://images.pexels.com/photos/14231672/pexels-photo-14231672.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      after: "https://images.pexels.com/photos/14231672/pexels-photo-14231672.jpeg?auto=compress&cs=tinysrgb&w=1600",
     },
   ],
 
+  // Gallery images — currently sourced from Pexels CDN (free license).
+  // To swap: drop your own images at /public/media/gallery/*.jpg and
+  // replace the `src` values with "/media/gallery/01.jpg" etc.
+  // The `span` controls layout — "tall", "wide", or "square".
   gallery: [
-    { src: "/media/gallery/01.jpg", alt: "Glossy black paint reflection", span: "tall" },
-    { src: "/media/gallery/02.jpg", alt: "Detailed leather interior", span: "wide" },
-    { src: "/media/gallery/03.jpg", alt: "Wheel and caliper detail", span: "square" },
-    { src: "/media/gallery/04.jpg", alt: "Foam wash closeup", span: "square" },
-    { src: "/media/gallery/05.jpg", alt: "Polished headlight", span: "tall" },
-    { src: "/media/gallery/06.jpg", alt: "Dashboard after detail", span: "wide" },
-    { src: "/media/gallery/07.jpg", alt: "Water beading on hood", span: "square" },
-    { src: "/media/gallery/08.jpg", alt: "Mobile rig on location", span: "square" },
+    {
+      src: "https://images.pexels.com/photos/20042055/pexels-photo-20042055.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      alt: "Detailer machine polishing a black Porsche in studio",
+      span: "wide",
+    },
+    {
+      src: "https://images.pexels.com/photos/11139244/pexels-photo-11139244.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Dual-action polisher cutting a blue paint panel",
+      span: "tall",
+    },
+    {
+      src: "https://images.pexels.com/photos/13333481/pexels-photo-13333481.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Mercedes grille closeup with glossy chrome detail",
+      span: "square",
+    },
+    {
+      src: "https://images.pexels.com/photos/6872149/pexels-photo-6872149.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Foam cannon bubbles on a black headlight assembly",
+      span: "square",
+    },
+    {
+      src: "https://images.pexels.com/photos/14231684/pexels-photo-14231684.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Machine polish on a black headlight housing",
+      span: "tall",
+    },
+    {
+      src: "https://images.pexels.com/photos/10182885/pexels-photo-10182885.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Cleaned wheel with bronze finish and red calipers",
+      span: "square",
+    },
+    {
+      src: "https://images.pexels.com/photos/6873174/pexels-photo-6873174.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      alt: "Bentley fully coated in foam ready for rinse",
+      span: "wide",
+    },
+    {
+      src: "https://images.pexels.com/photos/17356572/pexels-photo-17356572.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Foam wash cascading over a red sports car exhaust",
+      span: "square",
+    },
+    {
+      src: "https://images.pexels.com/photos/14231672/pexels-photo-14231672.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Blue microfiber wiping down a glossy black fender",
+      span: "tall",
+    },
+    {
+      src: "https://images.pexels.com/photos/5233262/pexels-photo-5233262.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Hand polishing a red door panel with foam pad",
+      span: "square",
+    },
   ],
 
   reviews: [

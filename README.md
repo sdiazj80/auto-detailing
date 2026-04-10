@@ -100,7 +100,8 @@ C:\auto-detailing\
 | City / region  | `serviceArea.*`               |
 | Cities served  | `serviceArea.cities`          |
 | Hero headline  | `hero.headline`, `hero.sub`   |
-| Hero video     | `hero.videoSrc` + drop into `public/media/hero/` |
+| Hero video     | `hero.videoSources[]` (array of URLs or local paths) |
+| Hero poster    | `hero.videoPoster`            |
 | Metrics        | `hero.metrics`                |
 | Trust strip    | `trustStrip`                  |
 | Services       | `services[]`                  |
@@ -110,16 +111,30 @@ C:\auto-detailing\
 | Gallery        | `gallery[]` + drop images in `public/media/gallery/` |
 | Reviews        | `reviews[]`                   |
 
-### Adding real media
+### Current temporary media
 
-- **Hero video**: drop a looping MP4 at `public/media/hero/hero.mp4` and a poster at `public/media/hero/hero-poster.jpg`. If missing, the hero shows a cinematic graphite/ice gradient fallback.
-- **Gallery images**: drop `01.jpg` … `08.jpg` into `public/media/gallery/`.
-- **Before/after**: drop paired `01-before.jpg` / `01-after.jpg` (and 02, 03…) into `public/media/before-after/`.
+To make the site feel complete out of the box, it ships with curated
+free-license placeholder media:
+
+| What | Source | License |
+| ---- | ------ | ------- |
+| Hero video (polishing closeup) | Mixkit — `assets.mixkit.co/videos/47833/47833-720.mp4` | Mixkit Free |
+| Hero video fallback (foam wash) | Mixkit — `assets.mixkit.co/videos/47586/47586-720.mp4` | Mixkit Free |
+| Hero poster + 10 gallery photos + 3 before/after cases | Pexels — `images.pexels.com/photos/...` | Pexels Free |
+
+Exact photo IDs and alt text live in `config/site.ts` under `hero`,
+`gallery`, and `beforeAfter`. All remote URLs are served by stable
+CDNs and should load instantly.
+
+### Replacing with real client media
+
+- **Hero video**: drop a looping MP4 at `public/media/hero/hero.mp4` and a poster at `public/media/hero/hero-poster.jpg`. Then in `config/site.ts` set `videoSources: ["/media/hero/hero.mp4"]` and `videoPoster: "/media/hero/hero-poster.jpg"`. The hero falls back to a cinematic graphite/ice gradient if all sources fail.
+- **Gallery images**: drop `01.jpg` … `10.jpg` into `public/media/gallery/`, then replace each `src` in `gallery[]` with `"/media/gallery/01.jpg"` etc.
+- **Before/after**: drop paired `01-before.jpg` / `01-after.jpg` etc. into `public/media/before-after/`, update the URLs in `beforeAfter[]`, **and** set `simulateBefore={false}` on the `<Slider>` in `components/BeforeAfter.tsx` to disable the darkening filter (which is only there because placeholder media reuses the same image for both sides).
 - **Logo**: replace `public/brand/logo.svg`.
 
-Every section gracefully falls back to glossy placeholder gradients until
-you drop real assets in — you can develop and demo the site before
-photos are ready.
+Every section gracefully falls back to glossy placeholder gradients if
+an asset fails to load — the site never looks empty.
 
 ---
 

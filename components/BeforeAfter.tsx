@@ -3,16 +3,29 @@
 import { useRef, useState } from "react";
 import { site } from "@/config/site";
 
+/**
+ * Before/After reveal slider.
+ *
+ * When `simulateBefore` is true (default), the `before` image is
+ * rendered with a darken/desaturate/soft-blur filter to create a
+ * convincing "dirty/untreated" look — useful while the site is using
+ * placeholder media and real before/after pairs aren't available yet.
+ *
+ * When real pairs are wired in (see config/site.ts → beforeAfter),
+ * pass `simulateBefore={false}` to render the raw `before` image.
+ */
 function Slider({
   label,
   before,
   after,
   reverse = false,
+  simulateBefore = true,
 }: {
   label: string;
   before: string;
   after: string;
   reverse?: boolean;
+  simulateBefore?: boolean;
 }) {
   const [pos, setPos] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,8 +74,26 @@ function Slider({
             src={before}
             alt={`${label} — before`}
             className="h-full w-full object-cover"
+            style={
+              simulateBefore
+                ? {
+                    filter:
+                      "brightness(0.42) contrast(0.78) saturate(0.35) blur(1.2px) sepia(0.12)",
+                  }
+                : undefined
+            }
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
+          {/* Grime overlay adds dust/haze speckle on top of the filter */}
+          {simulateBefore && (
+            <div
+              className="pointer-events-none absolute inset-0 mix-blend-multiply"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 30% 40%, rgba(90,80,60,0.35), transparent 70%), radial-gradient(ellipse at 70% 60%, rgba(60,55,45,0.4), transparent 65%)",
+              }}
+            />
+          )}
           <div className="placeholder-gloss-dark absolute inset-0 -z-10" />
           <span className="absolute left-4 top-4 rounded-full border border-white/20 bg-ink-0/60 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-bone-muted backdrop-blur">
             Before

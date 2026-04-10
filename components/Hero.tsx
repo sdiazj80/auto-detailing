@@ -6,18 +6,32 @@ import { site } from "@/config/site";
 export default function Hero() {
   return (
     <section className="relative min-h-[100svh] w-full overflow-hidden bg-ink-0">
-      {/* Background video with graceful gradient fallback */}
+      {/* Background video with graceful gradient fallback.
+          - hero-fallback gradient sits below everything
+          - video sources are tried in order; browser falls through
+          - poster shows until video plays or if autoplay is blocked */}
       <div className="absolute inset-0">
         <div className="hero-fallback absolute inset-0" />
+        {site.hero.videoPoster && (
+          <img
+            src={site.hero.videoPoster}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full object-cover opacity-60"
+          />
+        )}
         <video
           className="absolute inset-0 h-full w-full object-cover opacity-80"
           autoPlay
           muted
           loop
           playsInline
+          preload="metadata"
           poster={site.hero.videoPoster}
         >
-          <source src={site.hero.videoSrc} type="video/mp4" />
+          {site.hero.videoSources.map((src) => (
+            <source key={src} src={src} type="video/mp4" />
+          ))}
         </video>
 
         {/* Overlays: top-to-bottom ink, radial spot, noise, grid */}
